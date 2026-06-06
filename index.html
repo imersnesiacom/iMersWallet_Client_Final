@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iMersWallet - Asisten Keuangan Pribadi & Bisnis</title>
+    <title id="app-page-title">iMersWallet - Asisten Keuangan Pribadi & Bisnis</title>
     <!-- Tailwind CSS untuk Desain Responsif & Modern -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- ApexCharts untuk Visualisasi Data Finansial -->
@@ -172,7 +172,7 @@
             <div class="text-center space-y-1 sm:space-y-2">
                 <div id="lockscreen-logo-container" class="cursor-pointer flex justify-center w-full" onclick="focusPinInput()">
                 </div>
-                <h2 class="text-2xl sm:text-3xl font-black mt-2 sm:mt-4 text-slate-800"><span class="text-[#108EE9]">iMers</span>WALLET</h2>
+                <h2 id="app-brand-lockscreen" class="text-2xl sm:text-3xl font-black mt-2 sm:mt-4 text-slate-800 uppercase tracking-tight">iMersWallet</h2>
                 <p class="text-xs sm:text-sm text-slate-400 font-semibold">Masukkan PIN 6-Digit</p>
             </div>
 
@@ -218,7 +218,7 @@
         <div class="flex items-center gap-3 px-2">
             <div id="sidebar-logo-container" class="flex justify-center shrink-0">
             </div>
-            <span class="text-xl font-extrabold tracking-tight text-slate-800">iMers<span class="text-dana">Wallet</span></span>
+            <span id="app-brand-sidebar" class="text-xl font-extrabold tracking-tight text-slate-800">iMersWallet</span>
         </div>
 
         <nav class="flex-1 space-y-2">
@@ -402,11 +402,19 @@
                 "Tagihan": 1500000,
                 "Belanja": 2000000
             },
+            categories: [
+                { category: 'Makanan', type: 'expense', keywords: ['makan', 'minum', 'kopi', 'bakso', 'nasi'] },
+                { category: 'Transportasi', type: 'expense', keywords: ['bensin', 'grab', 'gojek', 'parkir'] },
+                { category: 'Tagihan', type: 'expense', keywords: ['listrik', 'wifi', 'token', 'air'] },
+                { category: 'Gaji', type: 'income', keywords: ['gaji', 'fee', 'bonus'] },
+                { category: 'Belanja', type: 'expense', keywords: ['baju', 'celana', 'belanja'] }
+            ],
             settings: {
                 FONNTE_TOKEN: "",
                 BOT_NUMBER: "628123456789",
                 USER_EMAIL: "owner@example.com",
                 APP_LOGO: "", 
+                App_Name: "iMersWallet",
                 TEMPLATE_SUCCESS: "✅ *Pencatatan Berhasil!*\n\n📂 *KANTONG: {wallet}*\n💰 *TIPE: {type}*\n📝 Kategori: {category}\n💬 Catatan: {note}\n💸 Nominal: *Rp{amount}*",
                 TEMPLATE_OVER_BUDGET: "⚠️ *WARNING BUDGET JEBOL!* ⚠️\n\nPengeluaran Anda pada kategori *{category}* telah melebihi batas anggaran bulanan!\n\n💸 Terpakai: *Rp{spent}*\n📊 Batas Anggaran: *Rp{limit}*",
                 TEMPLATE_WARN_BUDGET: "⚠️ *PERINGATAN HEMAT!* ⚠️\n\nPengeluaran kategori *{category}* sudah mencapai *{ratio}%* dari batas anggaran bulanan Anda.",
@@ -422,17 +430,6 @@
                 { id: 2, debtId: 1, date: "2026-06-02", note: "Cicilan kedua", amount: 100000 },
                 { id: 3, debtId: 1, date: "2026-07-02", note: "Cicilan ketiga", amount: 100000 },
                 { id: 4, debtId: 2, date: "2026-05-15", note: "Bayar DP kopi bulan ini", amount: 400000 }
-            ],
-            /* DATA KATEGORI DINAMIS DEFAULT */
-            categories: [
-                { category: 'Makanan', type: 'expense', keywords: ['makan','minum','kopi','bakso','nasi','warung','kuliner'] },
-                { category: 'Transportasi', type: 'expense', keywords: ['bensin','grab','gojek','parkir','transport','tol','ojek'] },
-                { category: 'Tagihan', type: 'expense', keywords: ['listrik','wifi','token','air','pulsa','kuota','internet'] },
-                { category: 'Gaji', type: 'income', keywords: ['gaji','fee','gajian','sampingan','bonus'] },
-                { category: 'Belanja', type: 'expense', keywords: ['baju','celana','belanja','shopee','tokopedia','mall'] },
-                { category: 'Freelance', type: 'income', keywords: ['proyek','project','desain','website'] },
-                { category: 'Pendidikan', type: 'expense', keywords: ['spp','buku','kursus','sekolah'] },
-                { category: 'Kesehatan', type: 'expense', keywords: ['obat','dokter','rs','klinik','vitamin'] }
             ]
         };
 
@@ -456,7 +453,7 @@
         DUMMY_DATA.settings.APP_FOOTER_TEXT = "Developed by Terry Katar | iMersnesia.com";
 
         const CONFIG = {
-            API_URL: "GANTI INI DENGAN WEB URL HASIL DEPLOY APPSCRIPTNYA",
+            API_URL: "GANTI DENGAN WEB URL HASIL DEPLOY ANDA DISINI",
             BOT_NUMBER: "628123456789"
         };
 
@@ -523,7 +520,7 @@
                 { from: 'bot', text: 'Wallet Chat siap. Ketik contoh: makan 25rb pribadi, gaji 5jt bisnis, nabung 500rb tabungan, atau saldo.', time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) }
             ],
             currentQuote: getRandomQuote(),
-            modalType: 'expense' // Digunakan untuk modal Catat Manual
+            modalType: 'expense'
         };
 
         const formatIDR = (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(val);
@@ -535,6 +532,16 @@
 
         function getAllWallets() {
             return Array.isArray(state.data.wallets) && state.data.wallets.length ? state.data.wallets : (DUMMY_DATA.wallets || []);
+        }
+
+        function getAllCategories() {
+            return Array.isArray(state.data.categories) && state.data.categories.length ? state.data.categories : (DUMMY_DATA.categories || []);
+        }
+
+        function categoryOptionsHtml(selected = "", typeFilter = null) {
+            let cats = getAllCategories();
+            if (typeFilter) cats = cats.filter(c => c.type === typeFilter);
+            return cats.map(c => `<option value="${c.category}" ${String(c.category) === String(selected) ? "selected" : ""}>${c.category}</option>`).join("");
         }
 
         function getActiveWallets() {
@@ -592,6 +599,23 @@
         function updateFooterInUI() {
             const footer = document.getElementById("sidebar-footer-text");
             if (footer) footer.innerText = getFooterText();
+        }
+
+        // FUNGSI BARU UNTUK MERUBAH TEKS "IMERSWALLET" MENJADI DINAMIS
+        function updateBrandingTextUI() {
+            const appName = state.data.settings?.App_Name || "iMersWallet";
+            
+            // Ubah Title Website (Di atas tab browser)
+            const pageTitle = document.getElementById('app-page-title');
+            if (pageTitle) pageTitle.innerText = `${appName} - Asisten Keuangan Pribadi & Bisnis`;
+
+            // Ubah tulisan utama di Lockscreen PIN
+            const lockscreenBrand = document.getElementById('app-brand-lockscreen');
+            if (lockscreenBrand) lockscreenBrand.innerText = appName.toUpperCase();
+
+            // Ubah tulisan utama di Sidebar Kiri
+            const sidebarBrand = document.getElementById('app-brand-sidebar');
+            if (sidebarBrand) sidebarBrand.innerText = appName;
         }
 
         function safeHtml(value) {
@@ -781,6 +805,13 @@
 
         function applyBrandingSettings(settings = {}) {
             if (!settings) return;
+            
+            // TANGKAP App_Name DARI GOOGLE SHEET
+            if (settings.App_Name) {
+                state.data.settings.App_Name = String(settings.App_Name).trim();
+                try { localStorage.setItem('imerswallet_app_name', state.data.settings.App_Name); } catch (e) {}
+            }
+
             if (settings.APP_LOGO && String(settings.APP_LOGO).trim() !== "") {
                 state.data.settings.APP_LOGO = String(settings.APP_LOGO).trim();
                 try { localStorage.setItem('imerswallet_app_logo', state.data.settings.APP_LOGO); } catch (e) {}
@@ -795,12 +826,17 @@
                 state.data.settings.APP_FOOTER_TEXT = String(settings.APP_FOOTER_TEXT || "").trim() || "Developed by Terry Katar | iMersnesia.com";
                 try { localStorage.setItem('imerswallet_footer_text', state.data.settings.APP_FOOTER_TEXT); } catch (e) {}
             }
+            
             updateLogosInUI();
             updateFooterInUI();
+            updateBrandingTextUI(); // Panggil fungsi update nama dinamis
         }
 
         function hydrateCachedBranding() {
             try {
+                const cachedAppName = localStorage.getItem('imerswallet_app_name');
+                if (cachedAppName) state.data.settings.App_Name = cachedAppName;
+
                 const cachedLogo = localStorage.getItem('imerswallet_app_logo');
                 const cachedBotNumber = localStorage.getItem('imerswallet_bot_number');
                 if (cachedLogo) state.data.settings.APP_LOGO = cachedLogo;
@@ -808,8 +844,10 @@
                 const cachedFooter = localStorage.getItem('imerswallet_footer_text');
                 if (cachedFooter) state.data.settings.APP_FOOTER_TEXT = cachedFooter;
             } catch (e) {}
+            
             updateLogosInUI();
             updateFooterInUI();
+            updateBrandingTextUI(); // Panggil fungsi update nama dinamis
         }
 
         async function preloadBrandingBeforePin() {
@@ -842,7 +880,6 @@
                 if (result.debts) state.data.debts = result.debts;
                 if (result.debtPayments) state.data.debtPayments = result.debtPayments;
                 
-                // Load Kategori dari Backend jika ada
                 if (result.categories) state.data.categories = result.categories;
 
                 state.data = result;
@@ -864,6 +901,7 @@
                 } else {
                     updateLogosInUI();
                     updateFooterInUI();
+                    updateBrandingTextUI();
                 }
             }
         }
@@ -900,6 +938,7 @@
             updateNavHighlights(view);
             render();
             updateLogosInUI();
+            updateBrandingTextUI();
         }
 
         function updateNavHighlights(view) {
@@ -912,11 +951,9 @@
                 'walletChat': { active: 'text-cyan-600 bg-cyan-50/70', inactive: 'text-cyan-400 hover:text-cyan-600 hover:bg-cyan-50/50', navActive: 'text-cyan-500', navInactive: 'text-slate-400' },
                 'users': { active: 'text-rose-600 bg-rose-50/70', inactive: 'text-rose-400 hover:text-rose-600 hover:bg-rose-50/50', navActive: 'text-rose-500', navInactive: 'text-slate-400' },
                 'profile': { active: 'text-indigo-600 bg-indigo-50/70', inactive: 'text-indigo-400 hover:text-indigo-600 hover:bg-indigo-50/50', navActive: 'text-indigo-500', navInactive: 'text-slate-400' },
-                // Tambahan Warna untuk Kategori
                 'categories': { active: 'text-orange-600 bg-orange-50/70', inactive: 'text-orange-400 hover:text-orange-600 hover:bg-orange-50/50', navActive: 'text-orange-500', navInactive: 'text-slate-400' }
             };
 
-            // Update Desktop Sidebar
             ['home', 'history', 'analytics', 'categories', 'walletDebt', 'walletReport', 'walletChat', 'users', 'profile'].forEach(v => {
                 const sideBtn = document.getElementById('side-' + v);
                 const color = colors[v] || colors['home'];
@@ -927,7 +964,6 @@
                 }
             });
 
-            // Update Mobile Bottom Nav (Utama, Riwayat, Analisis)
             ['home', 'history', 'analytics'].forEach(v => {
                 const navBtn = document.getElementById('nav-' + v);
                 if (navBtn) {
@@ -936,7 +972,6 @@
                 }
             });
 
-            // Update Mobile Bottom Nav (Tombol "Lainnya")
             const navMenuBtn = document.getElementById('nav-menu');
             if (navMenuBtn) {
                 const isMenuView = ['walletReport', 'walletDebt', 'users', 'profile', 'walletChat', 'categories'].includes(view);
@@ -962,6 +997,7 @@
                 lucide.createIcons();
             }
             updateFooterInUI();
+            updateBrandingTextUI();
         }
 
         // --- FUNGSI INIT CHART ---
@@ -2446,7 +2482,9 @@
                     </div>
                     <div>
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2">Kategori Pengeluaran</label>
-                        <input type="text" id="bg-category" placeholder="Contoh: Makanan, Transportasi, dsb..." class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-semibold outline-none focus:border-dana font-sans">
+                        <select id="bg-category" class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-semibold outline-none focus:border-dana font-sans">
+                            ${categoryOptionsHtml('', 'expense')}
+                        </select>
                     </div>
                     <div>
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2">Batas Bulanan (Rp)</label>
@@ -2671,6 +2709,81 @@
             }
         }
 
+        function addCategoryRow() {
+            const container = document.getElementById('category-list-container');
+            const idx = Date.now();
+            const newRow = document.createElement('div');
+            newRow.className = "grid grid-cols-1 md:grid-cols-12 gap-4 p-5 bg-slate-50 border border-slate-100 rounded-3xl items-center cat-row";
+            newRow.setAttribute('data-idx', idx);
+            newRow.innerHTML = `
+                <div class="md:col-span-3">
+                    <input type="text" id="cat-name-${idx}" class="w-full p-3.5 bg-white border border-slate-200 rounded-xl text-xs font-bold outline-none text-slate-700 focus:border-dana transition-all" placeholder="Nama Kategori">
+                </div>
+                <div class="md:col-span-3">
+                    <select id="cat-type-${idx}" class="w-full p-3.5 bg-white border border-slate-200 rounded-xl text-xs font-bold outline-none text-slate-700 focus:border-dana transition-all">
+                        <option value="expense">Pengeluaran (-)</option>
+                        <option value="income">Pemasukan (+)</option>
+                    </select>
+                </div>
+                <div class="md:col-span-5">
+                    <input type="text" id="cat-keywords-${idx}" class="w-full p-3.5 bg-white border border-slate-200 rounded-xl text-xs outline-none text-slate-700 focus:border-dana transition-all" placeholder="keyword1, keyword2">
+                </div>
+                <div class="md:col-span-1 text-right">
+                    <button onclick="removeCategoryRow(this)" class="p-3 text-rose-500 hover:bg-rose-50 rounded-xl transition-all"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                </div>
+            `;
+            container.appendChild(newRow);
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+
+        function removeCategoryRow(btn) {
+            btn.closest('.cat-row').remove();
+        }
+
+        async function saveCategorySettings() {
+            const rows = document.querySelectorAll('.cat-row');
+            const categories = [];
+            rows.forEach(row => {
+                const idx = row.getAttribute('data-idx');
+                const name = document.getElementById(`cat-name-${idx}`)?.value.trim();
+                const type = document.getElementById(`cat-type-${idx}`)?.value;
+                const keywords = document.getElementById(`cat-keywords-${idx}`)?.value || '';
+
+                if (name) {
+                    categories.push({
+                        category: name,
+                        type: type,
+                        keywords: keywords.split(',').map(k => k.trim()).filter(Boolean)
+                    });
+                }
+            });
+
+            const params = new URLSearchParams({
+                action: 'saveCategories',
+                categories_json: JSON.stringify(categories)
+            });
+
+            showToast("Menyimpan kategori...", "success");
+
+            const saveLocal = () => {
+                state.data.categories = categories;
+            };
+
+            try {
+                const response = await fetchWithTimeout(`${CONFIG.API_URL}?${params.toString()}`);
+                const result = await response.json();
+                if (result && result.status === 'success') {
+                    saveLocal();
+                    showToast("Kategori berhasil disimpan!", "success");
+                    render();
+                } else throw new Error(result?.message || "Gagal");
+            } catch (err) {
+                saveLocal();
+                showToast("Tersimpan lokal. (Mode Offline / Cek Apps Script)", "warn");
+                render();
+            }
+        }
+
         // Logic Functions Lainnya
         async function submitDebt() {
             const name = document.getElementById('debt-name').value;
@@ -2829,7 +2942,7 @@
 
             if (isNaN(limit) || limit <= 0) return showToast("Batas anggaran tidak valid", "warn");
 
-            const params = new URLSearchParams({
+            const params = newSearchParams({
                 action: 'saveBudget',
                 wallet,
                 category: cat,
